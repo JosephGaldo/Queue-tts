@@ -6,57 +6,62 @@
 </head>
 <body>
   <h1>Now Serving: <span id="display"></span></h1>
-  <!-- No need for button, can be removed if you want -->
+
   <script>
     const urlParams = new URLSearchParams(window.location.search);
     const number = urlParams.get('number') || 'R#001';
     const counter = urlParams.get('counter') || '1';
 
-    const messageText = `Now serving ${number} at counter ${counter}`;
+    const messageText = `Now serving ${number} ${counter}`;
     document.getElementById("display").textContent = messageText;
 
-    const announceBtn = document.getElementById('announceBtn');
     let selectedVoice = null;
 
     function findFemaleVoice() {
       const voices = speechSynthesis.getVoices();
-      const femaleVoices = voices.filter(voice => voice.name.toLowerCase().includes('female') || voice.name.toLowerCase().includes('woman') || voice.name.toLowerCase().includes('girl'));
+      const femaleVoices = voices.filter(voice =>
+        voice.name.toLowerCase().includes('female') ||
+        voice.name.toLowerCase().includes('woman') ||
+        voice.name.toLowerCase().includes('girl') ||
+        voice.name.toLowerCase().includes('zira') ||    // Windows female
+        voice.name.toLowerCase().includes('samantha') || // macOS/iOS
+        voice.name.toLowerCase().includes('karen') ||
+        voice.name.toLowerCase().includes('joanna')
+      );
       if (femaleVoices.length > 0) {
         selectedVoice = femaleVoices[0];
       } else if (voices.length > 0) {
-        selectedVoice = voices[0];
+        selectedVoice = voices[0]; // fallback
       }
     }
 
-    function announce() {
-      if (!selectedVoice) {
-        findFemaleVoice();
-      }
-      
-      // 1 second silence
+    function speakAndClose() {
+      if (!selectedVoice) findFemaleVoice();
+
       const silence = new SpeechSynthesisUtterance('');
       silence.volume = 0;
       silence.lang = 'en-US';
 
-      // The message
-      const message = new SpeechSynthesisUtterance(`.. Now Now serving ${number} ${counter}`);
+      const message = new SpeechSynthesisUtterance(`Now serving ${number}... ${counter}`);
       message.voice = selectedVoice;
       message.lang = 'en-US';
 
-      // Speak silence then message
+      message.onend = () => {
+        setTimeout(() => window.close(), 500); // Close the tab 0.5s after speaking
+      };
+
       speechSynthesis.speak(silence);
       speechSynthesis.speak(message);
     }
 
-    // Automatically run on load without button
     window.onload = () => {
       if (speechSynthesis.getVoices().length > 0) {
         findFemaleVoice();
-        announce();
+        speakAndClose();
       } else {
         speechSynthesis.onvoiceschanged = () => {
           findFemaleVoice();
-          announce();
+          speakAndClose();
         };
       }
     };
