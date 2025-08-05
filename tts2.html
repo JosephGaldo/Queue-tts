@@ -3,16 +3,28 @@
 <head>
   <meta charset="UTF-8" />
   <title>Queue Voice Announcer</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+	  text-align: center;
+	  font-size: 4em;
+	  color: black;
+      background-color: white;
+    }
+  </style>
 </head>
 <body>
-  <h1>Now Serving: <span id="display"></span></h1>
+  <h1><span id="display"></span></h1>
 
   <script>
     const urlParams = new URLSearchParams(window.location.search);
     const number = urlParams.get('number') || 'R#001';
     const counter = urlParams.get('counter') || '1';
 
-    const messageText = `Now serving ${number} ${counter}`;
+    const messageText = `Now serving: ${number} ${counter}`;
     document.getElementById("display").textContent = messageText;
 
     let selectedVoice = null;
@@ -23,15 +35,15 @@
         voice.name.toLowerCase().includes('female') ||
         voice.name.toLowerCase().includes('woman') ||
         voice.name.toLowerCase().includes('girl') ||
-        voice.name.toLowerCase().includes('zira') ||    // Windows female
-        voice.name.toLowerCase().includes('samantha') || // macOS/iOS
+        voice.name.toLowerCase().includes('zira') ||
+        voice.name.toLowerCase().includes('samantha') ||
         voice.name.toLowerCase().includes('karen') ||
         voice.name.toLowerCase().includes('joanna')
       );
       if (femaleVoices.length > 0) {
         selectedVoice = femaleVoices[0];
       } else if (voices.length > 0) {
-        selectedVoice = voices[0]; // fallback
+        selectedVoice = voices[0];
       }
     }
 
@@ -47,7 +59,7 @@
       message.lang = 'en-US';
 
       message.onend = () => {
-        setTimeout(() => window.close(), 500); // Close the tab 0.5s after speaking
+        setTimeout(() => window.close(), 500);
       };
 
       speechSynthesis.speak(silence);
