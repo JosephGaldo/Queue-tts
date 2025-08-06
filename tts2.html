@@ -82,15 +82,19 @@
 
     function playAudioAndSpeak() {
   const audio = new Audio('https://josephgaldo.github.io/Queue-tts/Announcement.mp3');
-  audio.onended = () => {
-    proceedWithSpeech();
-  };
-  audio.onerror = () => {
-    // If the audio fails to play, proceed anyway
-    console.error('Error playing audio');
-    proceedWithSpeech();
-  };
-  audio.play();
+  audio.play().then(() => {
+    // Delay for 2.20 seconds
+    setTimeout(() => {
+      proceedWithSpeech();
+    }, 2200); // 2200 milliseconds = 2.20 seconds
+  }).catch((error) => {
+    // If audio fails, proceed directly
+    console.error('Error playing audio:', error);
+    // Optional: still delay before proceeding
+    setTimeout(() => {
+      proceedWithSpeech();
+    }, 2200);
+  });
 }
 
   </script>
