@@ -9,9 +9,9 @@
       justify-content: center;
       align-items: center;
       height: 100vh;
-	  text-align: center;
-	  font-size: 4em;
-	  color: black;
+      text-align: center;
+      font-size: 4em;
+      color: black;
       background-color: white;
     }
   </style>
@@ -47,7 +47,7 @@
       }
     }
 
-    function speakAndClose() {
+    function proceedWithSpeech() {
       if (!selectedVoice) findFemaleVoice();
 
       const silence = new SpeechSynthesisUtterance('');
@@ -67,16 +67,32 @@
     }
 
     window.onload = () => {
-      if (speechSynthesis.getVoices().length > 0) {
-        findFemaleVoice();
-        speakAndClose();
+      const voicesLoaded = speechSynthesis.getVoices().length > 0;
+
+      if (voicesLoaded) {
+        // Voices are already loaded, proceed immediately
+        playAudioAndSpeak();
       } else {
+        // Wait for voices to load
         speechSynthesis.onvoiceschanged = () => {
-          findFemaleVoice();
-          speakAndClose();
+          playAudioAndSpeak();
         };
       }
     };
+
+    function playAudioAndSpeak() {
+  const audio = new Audio('https://josephgaldo.github.io/Queue-tts/Announcement.mp3');
+  audio.onended = () => {
+    proceedWithSpeech();
+  };
+  audio.onerror = () => {
+    // If the audio fails to play, proceed anyway
+    console.error('Error playing audio');
+    proceedWithSpeech();
+  };
+  audio.play();
+}
+
   </script>
 </body>
 </html>
